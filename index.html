@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-family: 'Noto Sans TC', 'DFKai-SB', sans-serif;
+        }
+
+        html {
+            height: 100%;
+        }
+
+        body {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        .qipan {
+            width: 580px;
+            height: 620px;
+            border: 1px solid #000;
+            /* position: absolute; */
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 棋盤框線範圍 */
+        .board {
+            position: absolute;
+            display: flex;
+            width: 480px;
+            height: 540px;
+            border: 1px solid #000;
+            flex-wrap: wrap;
+        }
+
+        /* 棋盤的單列 */
+        .row {
+            display: flex;
+            width: 480px;
+            height: 60px;
+        }
+
+        /* 棋盤的單格 */
+        .box {
+            width: 60px;
+            height: 60px;
+        }
+
+        /* 棋盤每一列下方畫一條線 */
+        .board .row {
+            border-bottom: 1px solid #000;
+            box-sizing: border-box;
+        }
+
+        .board .row:last-child {
+            border-bottom: 0px;
+        }
+
+        /* 棋盤每一格左邊劃一條線，選擇器用 + 的第一個不會畫 */
+        .row .box+.box {
+            border-left: 1px solid #000;
+            box-sizing: border-box;
+        }
+
+
+        /* 楚河漢界的格子 */
+        .row:nth-child(5) .box {
+            border: 0px;
+        }
+
+        /* 上方棋盤的斜線  */
+        .row:first-child .box:nth-child(4) {
+            background: linear-gradient(45deg, transparent 49%, #000 49%, transparent 51%, transparent 51%);
+        }
+
+        .row:first-child .box:nth-child(5) {
+            background: linear-gradient(135deg, transparent 49%, #000 49%, transparent 51%, transparent 51%);
+        }
+
+        .row:nth-child(2) .box:nth-child(4) {
+            background: linear-gradient(135deg, transparent 49%, #000 49%, transparent 51%, transparent 51%);
+        }
+
+        .row:nth-child(2) .box:nth-child(5) {
+            background: linear-gradient(45deg, transparent 49%, #000 49%, transparent 51%, transparent 51%);
+        }
+
+
+        /* 下方棋盤的斜線  */
+        .row:last-child .box:nth-child(4) {
+            background: linear-gradient(135deg, transparent 49%, #000 49%, transparent 51%, transparent 51%);
+
+        }
+
+        .row:last-child .box:nth-child(5) {
+            background: linear-gradient(45deg, transparent 49%, #000 49%, transparent 51%, transparent 51%);
+        }
+
+        .row:nth-last-child(2) .box:nth-child(4) {
+            background: linear-gradient(45deg, transparent 49%, #000 49%, transparent 51%, transparent 51%);
+        }
+
+        .row:nth-last-child(2) .box:nth-child(5) {
+            background: linear-gradient(135deg, transparent 49%, #000 49%, transparent 51%, transparent 51%);
+        }
+
+
+
+        /* 棋子們 */
+        .chesses {
+            position: absolute;
+            display: flex;
+            width: 526px;
+            height: 586px;
+            align-self: center;
+            flex-wrap: wrap;
+        }
+
+        /* 單個棋子 */
+        .chess {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 1px solid #000;
+            font-size: 1.6rem;
+            display: block;
+            text-align: center;
+            line-height: 46px;
+            /* box-sizing: border-box; */
+        }
+
+        .chess-row {
+            width: 100%;
+            height: 10%;
+            display: flex;
+            flex-direction: row;
+            /* align-items: center; */
+        }
+
+        /* 車馬象士將 */
+        .chess-row:first-child {
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        /* 包 */
+        .chess-row:nth-child(3) {
+            justify-content: space-around;
+            align-items: flex-start;
+        }
+
+        .chess-row:nth-child(3) .chess::before {
+            content: '包';
+        }
+
+        /* 卒 */
+        .chess-row:nth-child(4) {
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .chess-row:nth-child(4) .chess::before {
+            content: '卒';
+        }
+
+        /* 俥傌相仕帥 */
+        .chess-row:last-child {
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        /* 炮 */
+        .chess-row:nth-last-child(3) {
+            justify-content: space-around;
+            align-items: flex-end;
+        }
+
+        .chess-row:nth-last-child(3) .chess::after {
+            content: '炮';
+            color: red;
+        }
+
+        /* 兵 */
+        .chess-row:nth-last-child(4) {
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .chess-row:nth-last-child(4) .chess::before {
+            content: '兵';
+            color: red;
+        }
+
+        .text {
+            width: 60px;
+            text-align: center;
+            font-size: 1.6rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main">
+        <div class="text">
+            <div class="word">棋</div>
+            <div class="word">盤</div>
+            <div class="word">裡</div>
+            <div class="word">，</div>
+            <div class="word">車</div>
+            <div class="word">無</div>
+            <div class="word">輪</div>
+            <div class="word">，</div>
+            <div class="word">馬</div>
+            <div class="word">無</div>
+            <div class="word">韁</div>
+            <div class="word">，</div>
+            <div class="word">叫</div>
+            <div class="word">聲</div>
+            <div class="word">將</div>
+            <div class="word">軍</div>
+            <div class="word">提</div>
+            <div class="word">防</div>
+            <div class="word">提</div>
+            <div class="word">防</div>
+        </div>
+        <div class="qipan">
+            <div class="board">
+                <div class="row">
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                </div>
+                <div class="row">
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                </div>
+                <div class="row">
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                </div>
+                <div class="row">
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                </div>
+                <div class="row">
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                </div>
+                <div class="row">
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                </div>
+
+                <div class="row">
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                </div>
+                <div class="row">
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                </div>
+                <div class="row">
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                    <div class="box"></div>
+                </div>
+            </div>
+            <div class="chesses">
+                <div class="chess-row">
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                </div>
+                <div class="chess-row"></div>
+                <div class="chess-row">
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+
+                </div>
+                <div class="chess-row">
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+
+                </div>
+                <div class="chess-row"></div>
+                <div class="chess-row"></div>
+                <div class="chess-row">
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                </div>
+                <div class="chess-row">
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                </div>
+                <div class="chess-row"></div>
+                <div class="chess-row">
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                    <div class="chess"></div>
+                </div>
+            </div>
+        </div>
+        <div class="text">
+            <div class="word">圖</div>
+            <div class="word">畫</div>
+            <div class="word">裡</div>
+            <div class="word">，</div>
+            <div class="word">龍</div>
+            <div class="word">不</div>
+            <div class="word">吟</div>
+            <div class="word">，</div>
+            <div class="word">虎</div>
+            <div class="word">不</div>
+            <div class="word">笑</div>
+            <div class="word">，</div>
+            <div class="word">小</div>
+            <div class="word">小</div>
+            <div class="word">書</div>
+            <div class="word">僮</div>
+            <div class="word">可</div>
+            <div class="word">笑</div>
+            <div class="word">可</div>
+            <div class="word">笑</div>
+        </div>
+    </div>
+</body>
+
+</html>
